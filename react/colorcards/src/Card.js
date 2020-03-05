@@ -4,6 +4,26 @@ import Label from './Label';
 
 export default class Card extends React.Component {
 	
+	constructor(props) {
+		super(props);
+		this.state= {
+			color:"red"
+		}
+	}
+	
+	onChangeColor = () => {
+		let color = "#";
+		let colorpicker = "abcdef0123456789"
+		for(let i = 0;i<6;i++) {
+			let temp = Math.floor(Math.random()*16);
+			color = color + colorpicker[temp];
+		}
+		this.setState({
+			color:color
+		})
+		
+	}
+	
 	render() {
 		let cardStyle= {
 			height:200,
@@ -15,8 +35,9 @@ export default class Card extends React.Component {
 		}
 		return(
 			<div style={cardStyle}>
-				<Square color="red"/>
-				<Label color="red"/>
+				<Square color={this.state.color}/>
+				<Label color={this.state.color}
+				onChangeColor={this.onChangeColor}/>
 			</div>
 		)
 	}
