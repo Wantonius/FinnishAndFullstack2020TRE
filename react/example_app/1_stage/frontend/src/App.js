@@ -9,18 +9,53 @@ export default class App extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state= {
-			id:100,
 			list:[]
 		}
 	}
+	
+	componentDidMount() {
+		console.log("ComponentDidMount - App.js");
+		this.getShoppingList();
+	}
+	
+	getShoppingList = () => {
+		let request = {
+			method:"GET",
+			mode:"cors",
+			headers:{"Content-type":"application/json"}			
+		}
+		fetch("/api/shopping",request).then(response => {
+			if(response.ok) {
+				response.json().then(data => {
+						this.setState({
+							list:data
+						}) 
+				}).catch(error => {
+					console.log("Error in parsing JSON:",error);
+				});
+			}			
+		}).catch(error => {
+			console.log("Server responded with error:",error)
+		});
+	}
+	
 	addToList = (item) => {
-		item.id = this.state.id;
-		let tempList = this.state.list.concat(item);
-		let tempId = this.state.id+1;
-		this.setState({
-			id:tempId,
-			list:tempList
-		})
+		let request = {
+			method:"POST",
+			mode:"cors",
+			headers:{"Content-type":"application/json"},
+			body:JSON.stringify(item)
+		}
+		fetch("/api/shopping",request).then(response => {
+			if(response.ok) {
+				this.getShoppingList();
+			} else {
+				console.log("Addtolist:Server responded with status:",response.status);
+			}
+		}
+			).catch(error => {
+				console.log("Server responded with error:",error);
+			})
 	}
 	
 	render() {
