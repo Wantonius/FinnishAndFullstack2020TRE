@@ -58,12 +58,30 @@ export default class App extends React.Component {
 			})
 	}
 	
+	handleRemove = (id) => {
+		let request = {
+			method:"DELETE",
+			mode:"cors",
+			headers:{"Content-type":"application/json"}
+		}
+		let url = "/api/shopping/"+id
+		fetch(url,request).then(response => {
+			if(response.ok) {
+				this.getShoppingList();
+			} else {
+				console.log("HandleRemove: Server responded with status:",response.status);				
+			}
+		}).catch(error => {
+			console.log("Server responded with error:",error);
+		});
+	}
+	
 	render() {
 		return(
 			<div className="App">
 				<ShoppingForm addToList={this.addToList}/>
 				<hr/>
-				<ShoppingList list={this.state.list}/>
+				<ShoppingList list={this.state.list} handleRemove={this.handleRemove}/>
 			</div>
 		)
 	}	
