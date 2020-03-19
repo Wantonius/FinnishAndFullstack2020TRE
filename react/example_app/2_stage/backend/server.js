@@ -21,6 +21,32 @@ let id = 100
 let registeredUsers = [];
 let loggedSessions = [];
 
+//middleware
+
+createToken = () => {
+	let token = "";
+	let letters = "abcdefghijABCDEFGHIJ0123456789"
+	for(let i=0;i<256;i++) {
+		let temp = Math.floor(Math.random()*30);
+		token = token + letters[temp]
+	}
+	return token;
+}
+
+isUserLogged = (req,res,next) => {
+	if(req.headers.token) {
+		token = req.headers.token;
+		for(let i=0;i<loggedSessions.length;i++) {
+			if(token === loggedSessions[i].token) {
+				return next();
+			}
+		}
+	}
+	res.status(403).json({message:"forbidden"})
+}
+
+app.use("/api",isUserLogged);
+
 //LOGIN API
 
 app.post("/register",function(req,res) {
@@ -45,6 +71,35 @@ app.post("/register",function(req,res) {
 	registeredUsers.push(user);
 	console.log(registeredUsers);
 	return res.status(200).json({message:"success"});
+})
+
+app.post("/login",function(req,res) {
+	if(!req.body) {
+		return res.status(409).json({message:"wrong credentials"});
+	}
+	if(!req.body.username || !req.body.password) {
+		return res.status(409).json({message:"wrong credentials"});
+	}
+	if(req.body.username.length < 4 || req.body.password.length < 8) {
+		return res.status(409).json({message:"wrong credentials"});
+	}
+	let user = {
+		username:req.body.username,
+		password:req.body.password
+	}
+	for(let i=0;i<registeredUsers.length;i++) {
+		if(user.username === registeredUsers[i].username) {
+			if(user.password === registeredUsers[i].password) {
+				let token = createToken();
+				loggedSessions.push({
+					token:token,
+					user:user.username
+				})
+				return res.status(200).json({token:token})
+			}
+		}
+	}
+	res.status(409).json({message:"wrong credentials"});
 })
 
 // Content REST API
