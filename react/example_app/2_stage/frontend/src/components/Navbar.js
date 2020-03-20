@@ -9,6 +9,9 @@ export default class Navbar extends React.Component {
 	}
 	render() {
 		let header = "Shopping Application"
+		if(this.props.loading) {
+			header = "Loading ..."
+		}
 		let style = {
 			height:100,
 			backgroundColor:"lightblue"

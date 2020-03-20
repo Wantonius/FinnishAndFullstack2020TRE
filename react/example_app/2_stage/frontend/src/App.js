@@ -14,7 +14,8 @@ export default class App extends React.Component {
 		this.state= {
 			list:[],
 			token:"",
-			isLogged:false
+			isLogged:false,
+			loading:false
 		}
 	}
 	
@@ -35,6 +36,12 @@ export default class App extends React.Component {
 		sessionStorage.setItem("state",JSON.stringify(this.state));
 	}
 	
+	changeLoadingState = (loading) => {
+		this.setState({
+			loading:loading
+		})
+	}
+	
 	//LOGIN API
 	
 	register = (user) => {
@@ -44,8 +51,9 @@ export default class App extends React.Component {
 			headers:{"Content-type":"application/json"},
 			body:JSON.stringify(user)
 		}
-		
+		this.changeLoadingState(true);
 		fetch("/register",request).then(response => {
+			this.changeLoadingState(false);
 			if(response.ok) {
 				alert("Register success");
 			} else {
@@ -53,6 +61,7 @@ export default class App extends React.Component {
 			}
 		}
 		).catch(error => {
+			this.changeLoadingState(false);
 			console.log("Server responded with error:",error);
 		});
 	} 
@@ -64,8 +73,10 @@ export default class App extends React.Component {
 			headers:{"Content-type":"application/json"},
 			body:JSON.stringify(user)
 		}
+		this.changeLoadingState(true);
 		fetch("/login",request).then(response => {
-			if(response.ok) {
+			this.changeLoadingState(false);
+			if(response.ok) {				
 				response.json().then(data => {
 					this.setState({
 						token:data.token,
@@ -81,6 +92,7 @@ export default class App extends React.Component {
 				console.log("Server responded with status:",response.status);
 			}
 		}).catch(error => {
+			this.changeLoadingState(false);
 			console.log("Server responded with error:",error);
 		});
 	}
@@ -92,7 +104,9 @@ export default class App extends React.Component {
 			headers:{"Content-type":"application/json",
 					 "token":this.state.token}			
 		}
+		this.changeLoadingState(true);
 		fetch("/logout",request).then(response => {
+			this.changeLoadingState(false);
 			this.setState({
 				list:[],
 				token:"",
@@ -108,6 +122,7 @@ export default class App extends React.Component {
 			}, () => {
 				this.saveToStorage();
 			})
+			this.changeLoadingState(false);
 			console.log("Server responded with error:",error);
 		})
 	}
@@ -120,7 +135,9 @@ export default class App extends React.Component {
 			headers:{"Content-type":"application/json",
 					 "token":this.state.token}			
 		}
+		this.changeLoadingState(true);
 		fetch("/api/shopping",request).then(response => {
+			this.changeLoadingState(false);
 			if(response.ok) {
 				response.json().then(data => {
 						this.setState({
@@ -133,6 +150,7 @@ export default class App extends React.Component {
 				});
 			}			
 		}).catch(error => {
+			this.changeLoadingState(false);
 			console.log("Server responded with error:",error)
 		});
 	}
@@ -145,7 +163,9 @@ export default class App extends React.Component {
 					 "token":this.state.token},
 			body:JSON.stringify(item)
 		}
+		this.changeLoadingState(true);
 		fetch("/api/shopping",request).then(response => {
+			this.changeLoadingState(false);
 			if(response.ok) {
 				this.getShoppingList();
 			} else {
@@ -153,6 +173,7 @@ export default class App extends React.Component {
 			}
 		}
 			).catch(error => {
+				this.changeLoadingState(false);
 				console.log("Server responded with error:",error);
 			})
 	}
@@ -165,13 +186,16 @@ export default class App extends React.Component {
 					 "token":this.state.token}
 		}
 		let url = "/api/shopping/"+id
+		this.changeLoadingState(true);
 		fetch(url,request).then(response => {
+			this.changeLoadingState(false);
 			if(response.ok) {
 				this.getShoppingList();
 			} else {
 				console.log("HandleRemove: Server responded with status:",response.status);				
 			}
 		}).catch(error => {
+			this.changeLoadingState(false);
 			console.log("Server responded with error:",error);
 		});
 	}
@@ -184,14 +208,17 @@ export default class App extends React.Component {
 					 "token":this.state.token},
 			body:JSON.stringify(item)
 		}
+		this.changeLoadingState(true);
 		let url = "/api/shopping/"+item.id
 		fetch(url,request).then(response => {
+			this.changeLoadingState(false);
 			if(response.ok) {
 				this.getShoppingList();
 			} else {
 				console.log("HandleEdit:Server responded with status:",response.status);
 			}
 		}).catch(error => {
+			this.changeLoadingState(false);
 			console.log("Server responded with error:",error);
 		});
 	}
@@ -200,7 +227,8 @@ export default class App extends React.Component {
 		return(
 			<div className="App">
 				<Navbar isLogged={this.state.isLogged}
-						logout={this.logout}/>
+						logout={this.logout}
+						loading={this.state.loading}/>
 				<hr/>
 				<Switch>
 					<Route exact path="/" render={
