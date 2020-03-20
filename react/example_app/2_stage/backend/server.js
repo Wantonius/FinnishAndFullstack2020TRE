@@ -102,6 +102,20 @@ app.post("/login",function(req,res) {
 	res.status(409).json({message:"wrong credentials"});
 })
 
+app.post("/logout", function(req,res) {
+	let token = req.headers.token;
+	if(!token) {
+		return res.status(404).json({message:"not found"});
+	}
+	for(let i=0;i<loggedSessions.length;i++) {
+		if(loggedSessions.token === token) {
+			loggedSessions.splice(i,1);
+			return res.status(200).json({message:"success"})
+		}
+	}
+	return res.status(404).json({message:"not found"});
+})
+
 // Content REST API
 
 app.get("/api/shopping",function(req,res) {

@@ -5,6 +5,7 @@ import './App.css';
 import ShoppingList from './components/ShoppingList';
 import ShoppingForm from './components/ShoppingForm';
 import LoginForm from './components/LoginForm';
+import Navbar from './components/Navbar';
 
 export default class App extends React.Component {
 	
@@ -18,8 +19,20 @@ export default class App extends React.Component {
 	}
 	
 	componentDidMount() {
-		console.log("ComponentDidMount - App.js");
-		this.getShoppingList();
+		if(sessionStorage.getItem("state")) {
+			let state = JSON.parse(sessionStorage.getItem("state"));
+			this.setState(state,() => {
+				if(this.state.isLogged) {
+					this.getShoppingList();
+				}
+			})
+		}
+	}
+	
+	//HELPER FUNCTIONS
+	
+	saveToStorage = () => {
+		sessionStorage.setItem("state",JSON.stringify(this.state));
 	}
 	
 	//LOGIN API
@@ -59,6 +72,7 @@ export default class App extends React.Component {
 						isLogged:true
 					},() => {
 						this.getShoppingList();
+						this.saveToStorage();
 					})
 				}).catch(error => {
 					console.log("Error in parsing JSON:",error);
@@ -70,19 +84,49 @@ export default class App extends React.Component {
 			console.log("Server responded with error:",error);
 		});
 	}
+	
+	logout = () => {
+		let request = {
+			method:"POST",
+			mode:"cors",			
+			headers:{"Content-type":"application/json",
+					 "token":this.state.token}			
+		}
+		fetch("/logout",request).then(response => {
+			this.setState({
+				list:[],
+				token:"",
+				isLogged:false
+			}, () => {
+				this.saveToStorage();
+			})
+		}).catch(error => {
+				this.setState({
+				list:[],
+				token:"",
+				isLogged:false
+			}, () => {
+				this.saveToStorage();
+			})
+			console.log("Server responded with error:",error);
+		})
+	}
 	//CONTENT API
 	
 	getShoppingList = () => {
 		let request = {
 			method:"GET",
 			mode:"cors",
-			headers:{"Content-type":"application/json"}			
+			headers:{"Content-type":"application/json",
+					 "token":this.state.token}			
 		}
 		fetch("/api/shopping",request).then(response => {
 			if(response.ok) {
 				response.json().then(data => {
 						this.setState({
 							list:data
+						},() => {
+							this.saveToStorage();
 						}) 
 				}).catch(error => {
 					console.log("Error in parsing JSON:",error);
@@ -97,7 +141,8 @@ export default class App extends React.Component {
 		let request = {
 			method:"POST",
 			mode:"cors",
-			headers:{"Content-type":"application/json"},
+			headers:{"Content-type":"application/json",
+					 "token":this.state.token},
 			body:JSON.stringify(item)
 		}
 		fetch("/api/shopping",request).then(response => {
@@ -116,7 +161,8 @@ export default class App extends React.Component {
 		let request = {
 			method:"DELETE",
 			mode:"cors",
-			headers:{"Content-type":"application/json"}
+			headers:{"Content-type":"application/json",
+					 "token":this.state.token}
 		}
 		let url = "/api/shopping/"+id
 		fetch(url,request).then(response => {
@@ -134,7 +180,8 @@ export default class App extends React.Component {
 		let request = {
 			method:"PUT",
 			mode:"cors",
-			headers:{"Content-type":"application/json"},
+			headers:{"Content-type":"application/json",
+					 "token":this.state.token},
 			body:JSON.stringify(item)
 		}
 		let url = "/api/shopping/"+item.id
@@ -152,6 +199,9 @@ export default class App extends React.Component {
 	render() {
 		return(
 			<div className="App">
+				<Navbar isLogged={this.state.isLogged}
+						logout={this.logout}/>
+				<hr/>
 				<Switch>
 					<Route exact path="/" render={
 						() => this.state.isLogged ?
