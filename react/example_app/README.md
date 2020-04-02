@@ -8,3 +8,9 @@ SemanticUI React
 
 Stage 1:
 Basic functionality. No user or session management. No MongoDB.
+
+Stage 2:
+Basic login
+
+Stage 3:
+Session management and mongodb support
