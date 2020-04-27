@@ -32,7 +32,52 @@ export const onRegister = (user) => {
 	}
 }
 
+export const onLogin = (user) => {
+	return dispatch => {
+		let request = {
+			method:"POST",
+			mode:"cors",
+			headers:{"Content-type":"application/json"},
+			body:JSON.stringify(user)
+			}
+	dispatch(loading());
+	fetch("/login",request).then(response => {
+		if(response.ok) {
+			response.json().then(data => {
+				dispatch(loginSuccess(data.token));
+			}).catch(error => {
+				dispatch(loginFailed("Failed to parse user information. Try again!"));
+			});
+		} else {
+			dispatch(loginFailed("Login failed. Please provide proper credentials"));
+		}
+	}).catch(error => {
+		dispatch(loginFailed(error));
+	})
+}
+}
 
+export const onLogout = (token) => {
+	return dispatch => {
+		let request = {
+			method:"POST",
+			mode:"cors",
+			headers:{"Content-type":"application/json",
+				token:token}		
+		}
+		dispatch(loading());
+		fetch("/logout",request).then(response => {
+			if(response.ok) {
+				dispatch(logoutSuccess());
+			} else {
+				dispatch(logoutFailed("Server responded with an error. Logging out"));
+			}
+		}).catch(error => {
+			dispatch(logoutFailed("Server responded with an error:"+error));
+		})
+		
+	}
+}
 //Action Creators
 
 export const loading = () => {

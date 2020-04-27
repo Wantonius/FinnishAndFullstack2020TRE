@@ -2,11 +2,12 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import {List,Header} from 'semantic-ui-react';
 import {connect} from 'react-redux';
+import {onLogout} from '../actions/loginActions';
 
 class Navbar extends React.Component {
 
 	logout = () => {
-		this.props.logout();
+		this.props.dispatch(onLogout(this.props.token));
 	}
 	render() {
 		let header = "Shopping Application"
@@ -45,7 +46,9 @@ class Navbar extends React.Component {
 const mapStateToProps = (state) => {
 	return {
 		error:state.error,
-		loading:state.loading
+		loading:state.loading,
+		isLogged:state.isLogged,
+		token:state.token
 	}
 }
 

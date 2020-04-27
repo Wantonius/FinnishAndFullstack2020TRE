@@ -8,14 +8,28 @@ import {
 	LOGOUT_FAILED
 } from '../actions/loginActions';
 
-let initialState = {
-	loading:false,
-	isLogged:false,
-	token:"",
-	error:""
+const getInitialStateFromStorage = () => {
+	if(sessionStorage.getItem("loginstate")) {
+		let loginstate = JSON.parse(sessionStorage.getItem("loginstate"));
+		return loginstate
+	} else {
+		return {
+			loading:false,
+			isLogged:false,
+			token:"",
+			error:""
+		}
+	}
+}
+
+let initialState = getInitialStateFromStorage();
+
+const saveLoginState = (state) => {
+	sessionStorage.setItem("loginstate",JSON.stringify(state));
 }
 
 const loginReducer = (state = initialState, action) => {
+	console.log(action);
 	let tempState = {}
 	switch(action.type) {
 		case LOADING: 
@@ -30,6 +44,7 @@ const loginReducer = (state = initialState, action) => {
 				error:"",
 				loading:false
 			}
+			saveLoginState(tempState);
 			return tempState;
 		case REGISTER_FAILED: 
 			tempState = {
@@ -37,6 +52,7 @@ const loginReducer = (state = initialState, action) => {
 				error:action.error,
 				loading:false
 			}
+			saveLoginState(tempState);
 			return tempState;
 		case LOGIN_SUCCESS: 
 			tempState= {
@@ -45,6 +61,7 @@ const loginReducer = (state = initialState, action) => {
 				error:"",
 				loading:false
 			}
+			saveLoginState(tempState);
 			return tempState;
 		case LOGIN_FAILED:
 			tempState = {
@@ -52,6 +69,7 @@ const loginReducer = (state = initialState, action) => {
 				error:action.error,
 				loading:false
 			}
+			saveLoginState(tempState);
 			return tempState;
 		case LOGOUT_SUCCESS:
 			tempState = {
@@ -60,6 +78,7 @@ const loginReducer = (state = initialState, action) => {
 				loading:false,
 				token:""
 			}
+			saveLoginState(tempState);
 			return tempState;
 		case LOGOUT_FAILED:
 			tempState = {
@@ -68,6 +87,7 @@ const loginReducer = (state = initialState, action) => {
 				loading:false,
 				token:""
 			}
+			saveLoginState(tempState);
 			return tempState;
 		default:
 			return state;
