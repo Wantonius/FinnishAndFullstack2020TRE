@@ -4,13 +4,18 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import {BrowserRouter} from 'react-router-dom';
-import {createStore, applyMiddleware} from 'redux';
+import {createStore, applyMiddleware, combineReducers} from 'redux';
 import {Provider} from 'react-redux';
 import thunk from 'redux-thunk';
 import LoginReducer from './reducers/loginReducer';
+import ShoppingReducer from './reducers/shoppingReducer';
 
+const rootReducer = combineReducers({
+	login:LoginReducer,
+	shopping:ShoppingReducer
+})
 
-const store = createStore(LoginReducer, applyMiddleware(thunk));
+const store = createStore(rootReducer, applyMiddleware(thunk));
 
 ReactDOM.render(
 <Provider store={store}>

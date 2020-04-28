@@ -1,6 +1,8 @@
 //Action Constants
+import {clearShoppingState, getShoppingList} from './shoppingActions';
 
 export const LOADING = "LOADING"
+export const END_LOADING = "END_LOADING"
 export const REGISTER_SUCCESS = "REGISTER_SUCCESS"
 export const REGISTER_FAILED = "REGISTER_FAILED"
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
@@ -45,6 +47,7 @@ export const onLogin = (user) => {
 		if(response.ok) {
 			response.json().then(data => {
 				dispatch(loginSuccess(data.token));
+				dispatch(getShoppingList(data.token));
 			}).catch(error => {
 				dispatch(loginFailed("Failed to parse user information. Try again!"));
 			});
@@ -69,11 +72,14 @@ export const onLogout = (token) => {
 		fetch("/logout",request).then(response => {
 			if(response.ok) {
 				dispatch(logoutSuccess());
+				dispatch(clearShoppingState());
 			} else {
 				dispatch(logoutFailed("Server responded with an error. Logging out"));
+				dispatch(clearShoppingState());
 			}
 		}).catch(error => {
 			dispatch(logoutFailed("Server responded with an error:"+error));
+			dispatch(clearShoppingState());
 		})
 		
 	}
@@ -83,6 +89,12 @@ export const onLogout = (token) => {
 export const loading = () => {
 	return {
 		type:LOADING 
+	}
+}
+
+export const endLoading = () => {
+	return  {
+		type:END_LOADING
 	}
 }
 

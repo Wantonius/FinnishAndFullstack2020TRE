@@ -3,8 +3,10 @@ import {Table,Button} from 'semantic-ui-react';
 import NormalRow from './NormalRow';
 import RemoveRow from './RemoveRow';
 import EditRow from './EditRow';
+import {connect} from 'react-redux';
+import {getShoppingList, removeFromList} from '../actions/shoppingActions';
 
-export default class ShoppingList extends React.Component {
+class ShoppingList extends React.Component {
 	
 	constructor(props) {
 		super(props);
@@ -22,7 +24,7 @@ export default class ShoppingList extends React.Component {
 	}	
 	
 	searchByType = (event) => {
-		this.props.getList(this.state.search);
+		this.props.dispatch(getShoppingList(this.props.token,this.state.search));
 		this.setState({
 			search:""
 		})
@@ -53,7 +55,7 @@ export default class ShoppingList extends React.Component {
 	}
 	
 	handleRemove = (id) => {
-		this.props.handleRemove(id);
+		this.props.dispatch(removeFromList(this.props.token,id));;
 		this.cancel();
 	}
 	
@@ -113,3 +115,12 @@ export default class ShoppingList extends React.Component {
 	}
 	
 }
+
+const mapStateToProps = (state) => {
+	return {
+		list:state.shopping.list,
+		token:state.login.token
+	}
+}
+
+export default connect(mapStateToProps)(ShoppingList);

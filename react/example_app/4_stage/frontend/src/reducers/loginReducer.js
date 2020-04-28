@@ -1,5 +1,6 @@
 import {
 	LOADING,
+	END_LOADING,
 	REGISTER_SUCCESS,
 	REGISTER_FAILED,
 	LOGIN_SUCCESS,
@@ -29,13 +30,18 @@ const saveLoginState = (state) => {
 }
 
 const loginReducer = (state = initialState, action) => {
-	console.log(action);
 	let tempState = {}
 	switch(action.type) {
 		case LOADING: 
 			return {
 				...state,
 				loading:true,
+				error:""
+			}
+		case END_LOADING:
+			return {
+				...state,
+				loading:false,
 				error:""
 			}
 		case REGISTER_SUCCESS:
