@@ -41,7 +41,11 @@ class ShoppingForm extends React.Component {
 	}
 	
 	render() {
-		return(<Form onSubmit={this.onSubmit}>
+		let divStyle={width:500, margin:"auto",height:280, backgroundColor:"lightgreen"}
+		
+		return(
+		<div style={divStyle}>
+		<Form onSubmit={this.onSubmit}>
 				<Form.Field>
 					<label htmlFor="type">Type:</label>
 					<input type="text"
@@ -68,6 +72,7 @@ class ShoppingForm extends React.Component {
 				</Form.Field>
 				<Button type="submit">Add</Button>
 				</Form>
+		</div>
 				)
 	}
 }

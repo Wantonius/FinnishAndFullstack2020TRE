@@ -36,7 +36,9 @@ class LoginForm extends React.Component {
 	}
 
 	render() {
+		let divStyle={width:500, margin:"auto",height:200, backgroundColor:"lightgreen"}
 		return(
+		<div style={divStyle}>
 			<Form>
 				<Form.Field>
 					<label htmlFor="username">Username:</label>
@@ -56,6 +58,7 @@ class LoginForm extends React.Component {
 				<Button onClick={this.submit} name="register">Register</Button>
 				<Button onClick={this.submit} name="login">Login</Button>
 			</Form>
+		</div>
 		)	
 	}
 }

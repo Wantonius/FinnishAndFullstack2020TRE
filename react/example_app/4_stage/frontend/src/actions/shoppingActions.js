@@ -70,6 +70,7 @@ export const addToList = (token, item) => {
 				if(response.status === 403) {
 					dispatch(shoppingAddFailed("Server responded with a session failure. Logging out"));
 					dispatch(logoutSuccess());
+					dispatch(clearShoppingState());
 				} else {
 					dispatch(shoppingAddFailed("Server responded with an error status:"+response.statusText))
 				}
@@ -100,6 +101,7 @@ export const removeFromList = (token, id) => {
 				if(response.status === 403) {
 					dispatch(shoppingRemoveFailed("Server responded with a session failure. Logging out"));
 					dispatch(logoutSuccess());
+					dispatch(clearShoppingState());
 				} else {
 					dispatch(shoppingRemoveFailed("Server responded with an error:"+response.statusText));
 					if(response.status === 404) {
@@ -110,6 +112,40 @@ export const removeFromList = (token, id) => {
 		}).catch(error => {
 			dispatch(endLoading());
 			dispatch(shoppingRemoveFailed(error));
+		})
+	}
+}
+
+export const editItem = (token,item) => {
+	console.log("editItem");
+	console.log(item);
+	return dispatch => {
+		let request = {
+			method:"PUT",
+			mode:"cors",
+			headers:{"Content-Type":"application/json",
+			token:token},
+			body:JSON.stringify(item)
+		}
+		let url = "/api/shopping/"+item.id;
+		dispatch(loading());
+		fetch(url,request).then(response => {
+			dispatch(endLoading());
+			if(response.ok) {
+				dispatch(editShoppingItemSuccess());
+				dispatch(getShoppingList(token));
+			} else {
+				if (response.status === 403) {
+					dispatch(editShoppingItemFailed("Server responded with session failure. Logging out"));
+					dispatch(logoutSuccess());
+					dispatch(clearShoppingState());
+				} else {
+					dispatch(editShoppingItemFailed("Server responded with status:"+response.statusText))
+				}
+			}
+		}).catch(error => {
+			dispatch(endLoading());
+			dispatch(editShoppingItemFailed(error));
 		})
 	}
 }
