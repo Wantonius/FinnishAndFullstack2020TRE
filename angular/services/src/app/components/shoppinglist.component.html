@@ -1,0 +1,44 @@
+<div>
+	<h1>Shopping List</h1>
+	<form (ngSubmit)="addToList()" #shoppingForm="ngForm">
+		<div class="form-group">
+			<label for="type">Item type:</label>
+			<input type="text"
+					name="type"
+					[(ngModel)]="item.type"/>
+		</div>
+		<div class="form-group">
+			<label for="count">Count:</label>
+			<input type="number"
+					name="count"
+					minimum="0"
+					[(ngModel)]="item.count"/>
+		</div>
+		<div class="form-group">
+			<label for="price">Price:</label>
+			<input type="number"
+					name="price"
+					step="0.01" minimum="0"
+					[(ngModel)]="item.price"/>
+		</div>
+		<button class="btn btn-secondary" type="submit">Add</button>
+	</form>
+	<hr/>
+	<table class="table striped">
+		<thead>
+			<tr>
+				<th>Type</th>
+				<th>Count</th>
+				<th>Price</th>
+				<th>Remove</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let shoppingitem of shoppinglist;let idx=index">
+				<td>{{shoppingitem.type}}</td>
+				<td>{{shoppingitem.count}}</td>
+				<td>{{shoppingitem.price}}</td>
+				<td><button class="btn btn-secondary" (click)="removeFromList(idx)">Remove</button>
+			</tr>
+	</table>
+</div>

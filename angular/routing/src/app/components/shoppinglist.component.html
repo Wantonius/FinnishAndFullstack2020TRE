@@ -1,0 +1,17 @@
+<table class="table striped">
+	<thead>
+		<tr>
+			<th>Type</th>
+			<th>Count</th>
+			<th>Price</th>
+			<th>Remove</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr *ngFor="let shoppingitem of shoppinglist;let idx=index">
+			<td>{{shoppingitem.type}}</td>
+			<td>{{shoppingitem.count}}</td>
+			<td>{{shoppingitem.price}}</td>
+			<td><button class="btn btn-secondary" (click)="removeFromList(idx)">Remove</button>
+		</tr>
+</table>
